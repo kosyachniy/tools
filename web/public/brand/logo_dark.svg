@@ -1,13 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="250" viewBox="0 0 1080 250">
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="250" viewBox="0 0 720 250">
   <defs>
     <style>
       .cls-1 {
         font-size: 250px;
         fill: #343a40;
         font-family: "Avenir Next";
-        font-weight: 700;
+        font-weight: 550;
       }
     </style>
   </defs>
-  <text id="_Quateo_" data-name="{Quateo}" class="cls-1" x="-0.727" y="197.008">{Quateo}</text>
+  <text id="_Tools_" data-name="Tools/" class="cls-1" x="-0.727" y="197.008">Tools/</text>
 </svg>
