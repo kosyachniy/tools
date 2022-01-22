@@ -1,0 +1,106 @@
+version: "3.9"
+services:
+  db:
+    image: mongo:5.0.5
+    # ports:
+    #   - "27017:27017"
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MONGO_INITDB_DATABASE: admin
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_LOGIN}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - ../data/db:/data/db
+      - ../data/logs:/data/logs
+    #   - ../docker/db/mongod.conf:/etc/mongod.conf
+    # command: --config /etc/mongod.conf
+
+  api:
+    image: ${PROJECT_NAME}/api
+    build:
+      dockerfile: ../docker/api/Dockerfile
+      context: ../api
+      args:
+        - PROTOCOL=${PROTOCOL}
+        - HOST=${EXTERNAL_HOST}
+    depends_on:
+      - db
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ../data/load:/data/load
+      - ../data/backup:/backup
+      - ../scripts:/scripts
+      # NOTE: To provide files
+      - type: bind
+        source: ../data/logs/api.err
+        target: /app.err
+      - type: bind
+        source: ../data/logs/api.log
+        target: /app.log
+    command: uvicorn app:app --host 0.0.0.0 --port 5000 --proxy-headers
+
+  jobs:
+    image: ${PROJECT_NAME}/jobs
+    build:
+      dockerfile: ../docker/api/Dockerfile
+      context: ../api
+      args:
+        - PROTOCOL=${PROTOCOL}
+        - HOST=${EXTERNAL_HOST}
+    depends_on:
+      - db
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      # NOTE: To provide files
+      - type: bind
+        source: ../data/logs/jobs.err
+        target: /app.err
+      - type: bind
+        source: ../data/logs/jobs.log
+        target: /app.log
+    command: uvicorn jobs:app --host 0.0.0.0 --port 5000 --proxy-headers
+
+  tg:
+    image: ${PROJECT_NAME}/tg
+    build:
+      dockerfile: ../docker/tg/Dockerfile
+      context: ../tg
+      args:
+        - PROTOCOL=${PROTOCOL}
+        - HOST=${EXTERNAL_HOST}
+    env_file: .env
+    volumes:
+      - type: bind
+        source: ../data/logs/tg.err
+        target: /app.err
+      - type: bind
+        source: ../data/logs/tg.log
+        target: /app.log
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  server:
+    image: ${PROJECT_NAME}/server
+    build:
+      dockerfile: ../docker/web/Dockerfile.prod
+      context: ../web
+      args:
+        - PROTOCOL=${PROTOCOL}
+        - HOST=${EXTERNAL_HOST}
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ../docker/server/nginx.prod.conf:/etc/nginx/nginx.conf.template
+      - ../web/run.prod.sh:/run.sh
+      - ../data/load:/load
+      - ../data/logs:/data/logs
+    depends_on:
+      - api
+      - jobs
+      - tg
+    ports:
+      - "${EXTERNAL_PORT}:80"

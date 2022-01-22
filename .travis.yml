@@ -1,0 +1,14 @@
+language: python
+
+python:
+  - "3.9"
+
+services:
+  - mongodb
+
+install:
+  - cp docker/local.env docker/.env
+  - make setup-tests
+
+script:
+  - make test
