@@ -53,7 +53,7 @@ const Header = (props) => {
                             <Link to="/feed/" className="nav-link">{ t('structure.feed') }</Link>
                         </li> */}
                         <li className="nav-item dropdown">
-                            <Link to="/posts/" className="nav-link">{ t('structure.posts') }</Link>
+                            <Link to="/curl/" className="nav-link">{ t('tools.curl_converter') }</Link>
                             {/* <Link to="/admin/add/ladder/"><span className="badge badge-dark">+</span></Link> */}
                             {/* <div className="dropdown-content">
                                 {
@@ -67,7 +67,7 @@ const Header = (props) => {
                             <Link to="/" className="nav-link">{ t('structure.space') }</Link>
                         </li> */}
                         <li className="nav-item">
-                            <Link to="/room/" className="nav-link">{ t('structure.room') }</Link>
+                            <Link to="/decoder/" className="nav-link">{ t('tools.decoder') }</Link>
                         </li>
                         {/* <li className="nav-item dropdown">
                             <Link to="/events/" className="nav-link">{ t('structure.events') }</Link>

@@ -74,5 +74,9 @@
     "posts": {
         "title": "Заголовок",
         "empty": "Пусто"
+    },
+    "tools": {
+        "curl_converter": "Конвертер cURL",
+        "decoder": "Декодер"
     }
 }

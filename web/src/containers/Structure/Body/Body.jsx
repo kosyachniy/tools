@@ -13,6 +13,7 @@ import Loader from '../../../components/Loader'
 import Profile from '../../Pages/Profile'
 
 // Posts
+import ToolsCurl from '../../Tools/Curl'
 import PostsGrid from '../../Posts/Grid'
 import PostsFeed from '../../Posts/Feed'
 import PostsPost from '../../Posts/Post'
@@ -33,12 +34,10 @@ const App = (props) => {
         })
 
         socketIO.on('online_add', (x) => {
-            // console.log('ADD', x)
             props.onlineAdd(x)
         })
 
         socketIO.on('online_del', (x) => {
-            // console.log('DEL', x)
             props.onlineDelete(x)
         })
 
@@ -65,6 +64,10 @@ const App = (props) => {
                     <Switch>
                         <Route exact path="/">
                             <PostsGrid />
+                        </Route>
+
+                        <Route path="/curl">
+                            <ToolsCurl />
                         </Route>
 
                         <Route path="/posts">
