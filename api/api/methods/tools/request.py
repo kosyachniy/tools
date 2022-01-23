@@ -2,6 +2,7 @@
 The request method of the tool object of the API
 """
 
+import re
 import json
 import requests
 
@@ -32,8 +33,15 @@ async def handle(_, data):
     else:
         body = None
 
+    base_url = re.search(r'http.*://[^/]*/', data.url)
+    if base_url:
+        base_url = base_url[0]
+
     handler = getattr(requests, data.method.lower())
     res = handler(data.url, headers=headers, json=body).text
 
     # Response
-    return res
+    return {
+        'response': res,
+        'url': base_url,
+    }

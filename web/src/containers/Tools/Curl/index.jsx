@@ -11,6 +11,7 @@ const Curl = () => {
     const [headers, setHeaders] = useState([['Content-Type', 'application/json']])
     const [curl, setCurl] = useState('')
     const [res, setRes] = useState('')
+    const [baseUrl, setBaseUrl] = useState('')
 
     const handleCurl = () => {
         api('tools.curl', {method, url, data, headers}).then(res => {
@@ -20,7 +21,8 @@ const Curl = () => {
 
     const handleRequest = () => {
         api('tools.request', {method, url, data, headers}).then(res => {
-            setRes(res)
+            setRes(res.response)
+            setBaseUrl(res.url)
         })
     }
 
@@ -229,6 +231,12 @@ const Curl = () => {
                     value={ res }
                     disabled
                     readonly
+                />
+            </div>
+            <div className="row pt-4">
+                <iframe
+                    srcdoc={`<base href="${baseUrl}" />${res}`}
+                    style={{ width: '100%', height: '300px' }}
                 />
             </div>
         </>
