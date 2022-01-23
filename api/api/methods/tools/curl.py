@@ -7,6 +7,57 @@ import json
 from api.lib import BaseType, validate
 
 
+def convert_curl(method, url, params, data, headers):
+    params = '&'.join(
+        f"{param}={param_data}"
+        for param, param_data in params
+        if param
+    )
+    if params:
+        params = "?" + params
+
+    headers = ''.join(
+        f" -H '{header}: {header_data}'"
+        for header, header_data in headers
+        if header
+    )
+
+    if data:
+        try:
+            data = json.loads(data)
+        except TypeError:
+            data = f" -d '{data}'"
+        else:
+            data = f" -d '{json.dumps(data, ensure_ascii=False)}'"
+    else:
+        data = ""
+
+    return method.upper(), url, params, data, headers
+
+def convert_py(method, url, params, data, headers):
+    params = {
+        param: param_data
+        for param, param_data in params
+        if param
+    }
+
+    headers = {
+        header: header_data
+        for header, header_data in headers
+        if header
+    }
+
+    if data:
+        try:
+            data = json.loads(data)
+        except TypeError:
+            pass
+    else:
+        data = None
+
+    return method.lower(), url, params, data, headers
+
+
 class Type(BaseType):
     method: str = 'GET'
     url: str = None
@@ -18,39 +69,33 @@ class Type(BaseType):
 async def handle(_, data):
     """ cURL converter """
 
-    curl_params = '&'.join(
-        f"{param}={param_data}"
-        for param, param_data in data.params
-        if param
+    method, url, params, body, headers = convert_curl(
+        data.method, data.url, data.params, data.data, data.headers
     )
-    if curl_params:
-        curl_params = "?" + curl_params
-
-    curl_headers = ''.join(
-        f" -H '{header}: {header_data}'"
-        for header, header_data in data.headers
-        if header
-    )
-
-    if data.data:
-        try:
-            curl_data = json.loads(data.data)
-        except TypeError:
-            curl_data = ""
-        else:
-            curl_data = f" -d '{json.dumps(curl_data, ensure_ascii=False)}'"
-    else:
-        curl_data = ""
-
     curl = (
-        f"curl -v -X {data.method}"
-        f"{curl_headers}{curl_data}"
-        f" {data.url}{curl_params}"
+        f"curl -v -X {method}"
+        f"{headers}{body}"
+        f" {url}{params}"
     )
+
+    method, url, params, body, headers = convert_py(
+        data.method, data.url, data.params, data.data, data.headers
+    )
+    py = (
+        f"import requests\n\n"
+        f"res = requests.{method}('{url}',\n"
+    )
+    if headers:
+        py += f"    headers={headers},\n"
+    if params:
+        py += f"    params={params},\n"
+    if body:
+        py += f"    data='{body}',\n"
+    py += ").text\n\nprint(res)\n"
 
     # Response
     return {
         'curl': curl,
-        'py': "",
+        'py': py,
         'js': "",
     }

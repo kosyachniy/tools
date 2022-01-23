@@ -11,12 +11,16 @@ const Curl = () => {
     const [data, setData] = useState('')
     const [headers, setHeaders] = useState([['Content-Type', 'application/json']])
     const [curl, setCurl] = useState('')
+    const [py, setPy] = useState('')
+    const [js, setJs] = useState('')
     const [res, setRes] = useState('')
     const [baseUrl, setBaseUrl] = useState('')
 
     const handleCurl = () => {
         api('tools.curl', {method, url, params, data, headers}).then(res => {
             setCurl(res.curl)
+            setPy(res.py)
+            setJs(res.js)
         })
     }
 
@@ -237,16 +241,16 @@ const Curl = () => {
                         <textarea
                             type="text"
                             className="form-control"
-                            rows="3"
+                            rows="5"
                             aria-label="Py3"
                             aria-describedby="basic-addon1"
-                            value={ curl }
+                            value={ py }
                         />
                         <button
                             type="button"
                             id="button-addon2"
                             className="btn btn-outline-secondary"
-                            onClick={() => {navigator.clipboard.writeText(curl)}}
+                            onClick={() => {navigator.clipboard.writeText(py)}}
                         >
                             <i className="bi bi-files" />
                         </button>
@@ -265,13 +269,13 @@ const Curl = () => {
                             rows="3"
                             aria-label="JS"
                             aria-describedby="basic-addon1"
-                            value={ curl }
+                            value={ js }
                         />
                         <button
                             type="button"
                             id="button-addon2"
                             className="btn btn-outline-secondary"
-                            onClick={() => {navigator.clipboard.writeText(curl)}}
+                            onClick={() => {navigator.clipboard.writeText(js)}}
                         >
                             <i className="bi bi-files" />
                         </button>

@@ -1,5 +1,7 @@
 """
 The request method of the tool object of the API
+
+https://ru.wikipedia.org/wiki/HTTP
 """
 
 import re
@@ -7,6 +9,7 @@ import json
 import requests
 
 from api.lib import BaseType, validate
+from api.methods.tools.curl import convert_py
 
 
 class Type(BaseType):
@@ -20,32 +23,16 @@ class Type(BaseType):
 async def handle(_, data):
     """ Request """
 
-    params = {
-        param: param_data
-        for param, param_data in data.params
-        if param
-    }
-
-    headers = {
-        header: header_data
-        for header, header_data in data.headers
-        if header
-    }
-
-    if data.data:
-        try:
-            body = json.loads(data.data)
-        except TypeError:
-            body = None
-    else:
-        body = None
+    method, url, params, body, headers = convert_py(
+        data.method, data.url, data.params, data.data, data.headers
+    )
 
     base_url = re.search(r'http.*://[^/]*/', data.url)
     if base_url:
         base_url = base_url[0]
 
-    handler = getattr(requests, data.method.lower())
-    res = handler(data.url, headers=headers, params=params, data=body).text
+    handler = getattr(requests, method)
+    res = handler(url, headers=headers, params=params, data=body).text
 
     # Response
     return {
