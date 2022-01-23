@@ -10,12 +10,21 @@ from api.lib import BaseType, validate
 class Type(BaseType):
     method: str = 'GET'
     url: str = None
+    params: list = []
     data: str = ''
     headers: list = []
 
 @validate(Type)
 async def handle(_, data):
     """ cURL converter """
+
+    curl_params = '&'.join(
+        f"{param}={param_data}"
+        for param, param_data in data.params
+        if param
+    )
+    if curl_params:
+        curl_params = "?" + curl_params
 
     curl_headers = ''.join(
         f" -H '{header}: {header_data}'"
@@ -33,7 +42,11 @@ async def handle(_, data):
     else:
         curl_data = ""
 
-    curl = f"curl -v -X {data.method}{curl_headers}{curl_data} {data.url}"
+    curl = (
+        f"curl -v -X {data.method}"
+        f"{curl_headers}{curl_data}"
+        f" {data.url}{curl_params}"
+    )
 
     # Response
     return {

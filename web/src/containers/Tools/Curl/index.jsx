@@ -7,6 +7,7 @@ import api from '../../../lib/api'
 const Curl = () => {
     const [method, setMethod] = useState('POST')
     const [url, setUrl] = useState('')
+    const [params, setParams] = useState([])
     const [data, setData] = useState('')
     const [headers, setHeaders] = useState([['Content-Type', 'application/json']])
     const [curl, setCurl] = useState('')
@@ -14,13 +15,13 @@ const Curl = () => {
     const [baseUrl, setBaseUrl] = useState('')
 
     const handleCurl = () => {
-        api('tools.curl', {method, url, data, headers}).then(res => {
+        api('tools.curl', {method, url, params, data, headers}).then(res => {
             setCurl(res.curl)
         })
     }
 
     const handleRequest = () => {
-        api('tools.request', {method, url, data, headers}).then(res => {
+        api('tools.request', {method, url, params, data, headers}).then(res => {
             setRes(res.response)
             setBaseUrl(res.url)
         })
@@ -55,6 +56,62 @@ const Curl = () => {
                             onChange={(event) => {setUrl(event.target.value)}}
                         />
                     </div>
+                    {
+                        params.map((el, i) =>
+                            <div className="input-group mb-3" key={`param${i}`}>
+                                <button
+                                    type="button"
+                                    id="button-addon1"
+                                    className="btn btn-danger"
+                                    onClick={() => {
+                                        setParams([
+                                            ...params.slice(0, i),
+                                            ...params.slice(i+1, params.length,
+                                        )])
+                                    }}
+                                >
+                                    <i className="fa fa-times" aria-hidden="true" />
+                                </button>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="ParamName"
+                                    aria-label="Example text with button addon"
+                                    aria-describedby="button-addon1"
+                                    value={el[0]}
+                                    onChange={(event) => {
+                                        setParams([
+                                            ...params.slice(0, i),
+                                            [event.target.value, el[1]],
+                                            ...params.slice(i+1, params.length),
+                                        ])
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="ParamContent"
+                                    aria-label="Example text with button addon"
+                                    aria-describedby="button-addon1"
+                                    value={el[1]}
+                                    onChange={(event) => {
+                                        setParams([
+                                            ...params.slice(0, i),
+                                            [el[0], event.target.value],
+                                            ...params.slice(i+1, params.length),
+                                        ])
+                                    }}
+                                />
+                            </div>
+                        )
+                    }
+                    <button
+                        type="button"
+                        className="btn btn-outline-success mb-3 w-100"
+                        onClick={ () => {setParams([...params, ['', '']])} }
+                    >
+                        + Param
+                    </button>
                     <textarea
                         id="exampleFormControlTextarea1"
                         className="form-control mb-3"
@@ -66,7 +123,7 @@ const Curl = () => {
                     </textarea>
                     {
                         headers.map((el, i) =>
-                            <div className="input-group mb-3" key={i}>
+                            <div className="input-group mb-3" key={`header${i}`}>
                                 <button
                                     type="button"
                                     id="button-addon1"

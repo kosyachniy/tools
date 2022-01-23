@@ -12,12 +12,19 @@ from api.lib import BaseType, validate
 class Type(BaseType):
     method: str = 'GET'
     url: str = None
+    params: list = []
     data: str = None
     headers: list = []
 
 @validate(Type)
 async def handle(_, data):
     """ Request """
+
+    params = {
+        param: param_data
+        for param, param_data in data.params
+        if param
+    }
 
     headers = {
         header: header_data
@@ -38,7 +45,7 @@ async def handle(_, data):
         base_url = base_url[0]
 
     handler = getattr(requests, data.method.lower())
-    res = handler(data.url, headers=headers, json=body).text
+    res = handler(data.url, headers=headers, params=params, data=body).text
 
     # Response
     return {
