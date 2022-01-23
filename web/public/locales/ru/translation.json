@@ -77,6 +77,10 @@
     },
     "tools": {
         "curl_converter": "Конвертер cURL",
-        "decoder": "Декодер"
+        "server": "Сервер",
+        "decoder": "Декодер",
+        "re_exp": "Регулярные выражения",
+        "loader": "Загрузка фото",
+        "text_analysis": "Анализ текста"
     }
 }

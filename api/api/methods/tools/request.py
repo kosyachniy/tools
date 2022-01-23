@@ -5,10 +5,9 @@ https://ru.wikipedia.org/wiki/HTTP
 """
 
 import re
-import json
 import requests
 
-from api.lib import BaseType, validate
+from api.lib import BaseType, validate, report
 from api.methods.tools.curl import convert_py
 
 
@@ -20,16 +19,31 @@ class Type(BaseType):
     headers: list = []
 
 @validate(Type)
-async def handle(_, data):
+async def handle(request, data):
     """ Request """
 
-    method, url, params, body, headers = convert_py(
-        data.method, data.url, data.params, data.data, data.headers
-    )
+    await report.important("Request", {
+        'method': data.method,
+        'url': data.url,
+        'params': data.params,
+        'data': data.data,
+        'headers': data.headers,
+        'user': request.user.id or request.token,
+    })
 
     base_url = re.search(r'http.*://[^/]*/', data.url)
     if base_url:
         base_url = base_url[0]
+
+    if not data.url:
+        return {
+            'response': "",
+            'url': base_url,
+        }
+
+    method, url, params, body, headers = convert_py(
+        data.method, data.url, data.params, data.data, data.headers
+    )
 
     handler = getattr(requests, method)
     res = handler(url, headers=headers, params=params, data=body).text

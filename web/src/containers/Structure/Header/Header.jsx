@@ -63,11 +63,20 @@ const Header = (props) => {
                                 }
                             </div> */}
                         </li>
-                        {/* <li className="nav-item">
-                            <Link to="/" className="nav-link">{ t('structure.space') }</Link>
-                        </li> */}
+                        <li className="nav-item">
+                            <Link to="/server/" className="nav-link" disabled>{ t('tools.server') }</Link>
+                        </li>
                         <li className="nav-item">
                             <Link to="/decoder/" className="nav-link">{ t('tools.decoder') }</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/regular/" className="nav-link">{ t('tools.re_exp') }</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/loader/" className="nav-link">{ t('tools.loader') }</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/loader/" className="nav-link">{ t('tools.text_analysis') }</Link>
                         </li>
                         {/* <li className="nav-item dropdown">
                             <Link to="/events/" className="nav-link">{ t('structure.events') }</Link>
@@ -87,7 +96,7 @@ const Header = (props) => {
                             <Link to="/map/" className="nav-link">{ t('structure.map') }</Link>
                         </li> */}
                     </ul>
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                    {/* <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item dropdown">
                             <input
                                 id="search"
@@ -98,7 +107,7 @@ const Header = (props) => {
                                 onChange={ (event) => {searching(event.target.value)} }
                             />
                         </li>
-                    </ul>
+                    </ul> */}
                     <ul className="nav navbar-nav navbar-right">
                         <li className="nav-item">
                             { online.count ? (

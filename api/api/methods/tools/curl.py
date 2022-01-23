@@ -4,7 +4,7 @@ The cURL request creating method of the tool object of the API
 
 import json
 
-from api.lib import BaseType, validate
+from api.lib import BaseType, validate, report
 
 
 def convert_curl(method, url, params, data, headers):
@@ -91,8 +91,17 @@ class Type(BaseType):
     headers: list = []
 
 @validate(Type)
-async def handle(_, data):
+async def handle(request, data):
     """ cURL converter """
+
+    await report.important("cURL converter", {
+        'method': data.method,
+        'url': data.url,
+        'params': data.params,
+        'data': data.data,
+        'headers': data.headers,
+        'user': request.user.id or request.token,
+    })
 
     method, url, params, body, headers = convert_curl(
         data.method, data.url, data.params, data.data, data.headers
