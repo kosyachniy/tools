@@ -2,15 +2,13 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 // import { useTranslation } from 'react-i18next'
 
-import './style.css'
-
 
 const Footer = (props) => {
     const { system, changeLang, changeTheme } = props
     // const { t } = useTranslation()
 
     return (
-        <footer className={`bg-${system.theme} ${system.theme === 'dark' ? "" : "text-muted"}`}>
+        <footer className={`bg-${system.theme} ${system.theme === 'dark' ? "" : "text-muted"} pt-3`}>
             <div className="container d-flex flex-wrap justify-content-between align-items-center py-3 mt-4 border-top">
                 <p className="col-md-4 mb-0">
                     { process.env.REACT_APP_NAME } &copy; 2018-{ new Date().getFullYear() }

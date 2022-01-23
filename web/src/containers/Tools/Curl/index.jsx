@@ -5,15 +5,22 @@ import api from '../../../lib/api'
 
 
 const Curl = () => {
-    const [method, setMethod] = useState('GET')
+    const [method, setMethod] = useState('POST')
     const [url, setUrl] = useState('')
     const [data, setData] = useState('')
     const [headers, setHeaders] = useState([['Content-Type', 'application/json']])
     const [curl, setCurl] = useState('')
+    const [res, setRes] = useState('')
 
     const handleCurl = () => {
         api('tools.curl', {method, url, data, headers}).then(res => {
             setCurl(res.curl)
+        })
+    }
+
+    const handleRequest = () => {
+        api('tools.request', {method, url, data, headers}).then(res => {
+            setRes(res)
         })
     }
 
@@ -28,8 +35,8 @@ const Curl = () => {
                             aria-label="Default select example"
                             onChange={(event) => {setMethod(event.target.value)}}
                         >
-                            <option value="GET" defaultValue>GET</option>
-                            <option value="POST">POST</option>
+                            <option value="GET">GET</option>
+                            <option value="POST" selected defaultValue>POST</option>
                             <option value="PUT">PUT</option>
                             <option value="DELETE">DELETE</option>
                             <option value="HEAD">HEAD</option>
@@ -117,6 +124,7 @@ const Curl = () => {
                                 <button
                                     type="button"
                                     className="btn btn-success w-100"
+                                    onClick={ handleRequest }
                                 >
                                     Run
                                 </button>
@@ -125,7 +133,7 @@ const Curl = () => {
                                 <button
                                     type="button"
                                     className="btn btn-success w-100"
-                                    onClick={handleCurl}
+                                    onClick={ handleCurl }
                                 >
                                     Convert
                                 </button>
@@ -210,6 +218,18 @@ const Curl = () => {
                         </button>
                     </div>
                 </div>
+            </div>
+            <div className="row pt-4">
+                <textarea
+                    type="text"
+                    className="form-control"
+                    rows="10"
+                    aria-label="Response"
+                    aria-describedby="basic-addon1"
+                    value={ res }
+                    disabled
+                    readonly
+                />
             </div>
         </>
     )
