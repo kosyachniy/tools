@@ -25,7 +25,7 @@ def convert_curl(method, url, params, data, headers):
     if data:
         try:
             data = json.loads(data)
-        except TypeError:
+        except (TypeError, json.decoder.JSONDecodeError):
             data = f" -d '{data}'"
         else:
             data = f" -d '{json.dumps(data, ensure_ascii=False)}'"
@@ -50,12 +50,37 @@ def convert_py(method, url, params, data, headers):
     if data:
         try:
             data = json.loads(data)
-        except TypeError:
+        except (TypeError, json.decoder.JSONDecodeError):
             pass
     else:
         data = None
 
     return method.lower(), url, params, data, headers
+
+def convert_js(method, url, params, data, headers):
+    params = '&'.join(
+        f"{param}={param_data}"
+        for param, param_data in params
+        if param
+    )
+    if params:
+        params = "?" + params
+
+    headers = {
+        header: header_data
+        for header, header_data in headers
+        if header
+    }
+
+    if data:
+        try:
+            data = f"JSON.stringify({json.loads(data)}"
+        except (TypeError, json.decoder.JSONDecodeError):
+            data = f"'{data}'"
+    else:
+        data = None
+
+    return method.upper(), url, params, data, headers
 
 
 class Type(BaseType):
@@ -83,8 +108,10 @@ async def handle(_, data):
     )
     py = (
         f"import requests\n\n"
-        f"res = requests.{method}('{url}',\n"
+        f"res = requests.{method}('{url}'"
     )
+    if headers or params or body:
+        py += ",\n"
     if headers:
         py += f"    headers={headers},\n"
     if params:
@@ -93,9 +120,22 @@ async def handle(_, data):
         py += f"    data='{body}',\n"
     py += ").text\n\nprint(res)\n"
 
+    method, url, params, body, headers = convert_js(
+        data.method, data.url, data.params, data.data, data.headers
+    )
+    js = (
+        f"fetch('{url}{params}', {'{'}\n"
+        f"    method: '{method}',\n"
+    )
+    if headers:
+        js += f"    headers: {headers},\n"
+    if body:
+        js += f"    body: {body},\n"
+    js += "}).then(\n    res => res.json()\n).then(\n    res => console.log(res)\n);\n"
+
     # Response
     return {
         'curl': curl,
         'py': py,
-        'js': "",
+        'js': js,
     }

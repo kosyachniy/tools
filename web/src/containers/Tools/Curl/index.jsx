@@ -266,7 +266,7 @@ const Curl = () => {
                         <textarea
                             type="text"
                             className="form-control"
-                            rows="3"
+                            rows="5"
                             aria-label="JS"
                             aria-describedby="basic-addon1"
                             value={ js }
