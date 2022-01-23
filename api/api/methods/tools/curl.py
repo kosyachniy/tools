@@ -20,6 +20,7 @@ async def handle(_, data):
     curl_headers = ''.join(
         f" -H '{header}: {header_data}'"
         for header, header_data in data.headers
+        if header
     )
 
     if data.data:

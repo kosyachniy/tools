@@ -127,7 +127,7 @@ const Curl = () => {
                                     className="btn btn-success w-100"
                                     onClick={handleCurl}
                                 >
-                                    Convert to cURL
+                                    Convert
                                 </button>
                             </div>
                         </div>
@@ -154,6 +154,7 @@ const Curl = () => {
                             type="button"
                             id="button-addon2"
                             className="btn btn-outline-secondary"
+                            onClick={() => {navigator.clipboard.writeText(curl)}}
                         >
                             <i className="bi bi-files" />
                         </button>
@@ -178,6 +179,7 @@ const Curl = () => {
                             type="button"
                             id="button-addon2"
                             className="btn btn-outline-secondary"
+                            onClick={() => {navigator.clipboard.writeText(curl)}}
                         >
                             <i className="bi bi-files" />
                         </button>
@@ -202,6 +204,7 @@ const Curl = () => {
                             type="button"
                             id="button-addon2"
                             className="btn btn-outline-secondary"
+                            onClick={() => {navigator.clipboard.writeText(curl)}}
                         >
                             <i className="bi bi-files" />
                         </button>
