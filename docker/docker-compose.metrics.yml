@@ -58,7 +58,7 @@ services:
     # command: --config /etc/mongod.conf
 
   api:
-    image: web/api
+    image: tools/api
     build:
       dockerfile: ../docker/api/Dockerfile
       context: ../api
@@ -95,7 +95,7 @@ services:
     command: uvicorn app:app --host 0.0.0.0 --port 5000 --proxy-headers
 
   jobs:
-    image: web/jobs
+    image: tools/jobs
     build:
       dockerfile: ../docker/api/Dockerfile
       context: ../api
@@ -116,47 +116,55 @@ services:
         target: /app.log
     command: uvicorn jobs:app --host 0.0.0.0 --port 5000 --proxy-headers
 
-  tg:
-    image: web/tg
-    build:
-      dockerfile: ../docker/tg/Dockerfile
-      context: ../tg
-      args:
-        - PROTOCOL=${PROTOCOL}
-        - HOST=${EXTERNAL_HOST}
-    env_file: .env
-    volumes:
-      - type: bind
-        source: ../data/logs/tg.err
-        target: /app.err
-      - type: bind
-        source: ../data/logs/tg.log
-        target: /app.log
-    depends_on:
-      - api
-    restart: unless-stopped
+  # tg:
+  #   image: tools/tg
+  #   build:
+  #     dockerfile: ../docker/tg/Dockerfile
+  #     context: ../tg
+  #     args:
+  #       - PROTOCOL=${PROTOCOL}
+  #       - HOST=${EXTERNAL_HOST}
+  #   env_file: .env
+  #   volumes:
+  #     - type: bind
+  #       source: ../data/logs/tg.err
+  #       target: /app.err
+  #     - type: bind
+  #       source: ../data/logs/tg.log
+  #       target: /app.log
+  #   depends_on:
+  #     - api
+  #   restart: unless-stopped
 
-  server:
-    image: web/server
+  web:
+    image: tools/web
     build:
       dockerfile: ../docker/web/Dockerfile.prod
       context: ../web
       args:
         - PROTOCOL=${PROTOCOL}
         - HOST=${EXTERNAL_HOST}
+    env_file: .env
+    volumes:
+      - ../data/build:/build/
+
+  server:
+    image: "nginx:1.21.5"
     restart: unless-stopped
     env_file: .env
     volumes:
       - ../docker/server/nginx.metrics.conf:/etc/nginx/nginx.conf.template
-      - ../web/run.prod.sh:/run.sh
+      - ../data/build:/build/
       - ../data/load:/load
       - ../data/logs:/data/logs
     depends_on:
       - api
       - jobs
-      - tg
+      - web
+      # - tg
       - prometheus
       - grafana
       - cadvisor
     ports:
       - "8020:80"
+    command: /bin/sh -c "envsubst '$${EXTERNAL_HOST}'< /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g \"daemon off;\""
