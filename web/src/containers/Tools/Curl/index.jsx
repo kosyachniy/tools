@@ -33,8 +33,8 @@ const Curl = () => {
 
     return (
         <>
-            <div class="row pt-3">
-                <div className="col">
+            <div className="row pt-3">
+                <div className="col col-12 col-md-6">
                     <div className="input-group mb-3">
                         <select
                             id="inputGroupSelect02"
@@ -183,7 +183,7 @@ const Curl = () => {
                     </button>
                     <div className="container-fluid px-4">
                         <div className="row gx-5">
-                            <div className="col">
+                            <div className="col mb-3">
                                 <button
                                     type="button"
                                     className="btn btn-success w-100"
@@ -192,7 +192,7 @@ const Curl = () => {
                                     Run
                                 </button>
                             </div>
-                            <div className="col">
+                            <div className="col mb-3">
                                 <button
                                     type="button"
                                     className="btn btn-success w-100"
@@ -204,12 +204,12 @@ const Curl = () => {
                         </div>
                     </div>
                 </div>
-                <div className="col">
+                <div className="col col-12 col-md-6">
                     <div className="input-group mb-3">
                         <span
                             id="basic-addon1"
                             className="input-group-text"
-                            style={{ width: '12%' }}
+                            style={{ width: '4rem' }}
                         >
                             cURL
                         </span>
@@ -234,7 +234,7 @@ const Curl = () => {
                         <span
                             id="basic-addon1"
                             className="input-group-text"
-                            style={{ width: '12%' }}
+                            style={{ width: '4rem' }}
                         >
                             Py3
                         </span>
@@ -259,7 +259,7 @@ const Curl = () => {
                         <span
                             id="basic-addon1"
                             className="input-group-text"
-                            style={{ width: '12%' }}
+                            style={{ width: '4rem' }}
                         >
                             JS
                         </span>
